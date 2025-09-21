@@ -229,7 +229,7 @@ const InputSection = ({ documentText, setDocumentText, language, setLanguage, is
   );
 };
 
-// --- NEW: Reusable Audio Player Component ---
+// --- Reusable Audio Player Component ---
 const AudioPlayer = ({ textToSpeak, language, setError }) => {
     const [isGeneratingAudio, setIsGeneratingAudio] = useState(false);
     const [isPlaying, setIsPlaying] = useState(false);
@@ -379,37 +379,70 @@ const ChatWindow = ({ originalDocument, analysisText, mdConverter, chatLanguage,
     const [question, setQuestion] = useState('');
     const [isAiTyping, setIsAiTyping] = useState(false);
     const chatContainerRef = useRef(null);
-    useEffect(() => { if (analysisText && history.length === 0) setHistory([{ role: 'model', parts: [{ text: "Your analysis is complete. Ask any questions." }] }])}, [analysisText, history.length]);
-    useEffect(() => { if (chatContainerRef.current) chatContainerRef.current.scrollTop = chatContainerRef.current.scrollHeight; }, [history, isAiTyping]);
 
-    const handleAskQuestion = async (textFromMic) => {
-        const userQuestion = textFromMic || question;
+    useEffect(() => { 
+        if (analysisText && history.length === 0) {
+            setHistory([{ role: 'model', parts: [{ text: "Your analysis is complete. Feel free to ask any questions about the document." }] }]);
+        }
+    }, [analysisText, history.length]);
+    
+    useEffect(() => { 
+        if (chatContainerRef.current) {
+            chatContainerRef.current.scrollTop = chatContainerRef.current.scrollHeight; 
+        }
+    }, [history, isAiTyping]);
+
+    const handleAskQuestion = async () => {
+        const userQuestion = question;
         if (!userQuestion.trim()) return;
+
         const newUserMessage = { role: 'user', parts: [{ text: userQuestion }] };
         const historyForAPI = [...history];
-        setHistory(prev => [...prev, newUserMessage, {role: 'model', parts: [{text: ''}]}]);
+        
+        // Add user message and a placeholder for the AI response
+        setHistory(prev => [...prev, newUserMessage, {role: 'model', parts: [{text: ""}]}]);
         setQuestion('');
         setIsAiTyping(true);
+
         try {
             const response = await fetch(`${BACKEND_URL}/chat-with-document`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ document: originalDocument, history: historyForAPI, question: userQuestion, language: chatLanguage }),
+                body: JSON.stringify({ 
+                    document: originalDocument, 
+                    history: historyForAPI, 
+                    question: userQuestion, 
+                    language: chatLanguage 
+                }),
             });
-            if (!response.ok) throw new Error(await response.text());
-            const reader = response.body.getReader();
-            const decoder = new TextDecoder();
-            while (true) {
-                const { value, done } = await reader.read();
-                if (done) break;
-                const chunk = decoder.decode(value, { stream: true });
-                setHistory(prev => { const updated = [...prev]; updated[updated.length - 1].parts[0].text += chunk; return updated; });
+
+            if (!response.ok) {
+                const errData = await response.json();
+                throw new Error(errData.detail || "Chat request failed");
             }
+
+            const data = await response.json();
+            
+            // Update the last message (the AI placeholder) with the actual response
+            setHistory(prev => {
+                const updated = [...prev];
+                updated[updated.length - 1].parts[0].text = data.response;
+                return updated;
+            });
+
         } catch (err) {
-            setHistory(prev => { const updated = [...prev]; updated[updated.length - 1].parts[0].text = "Sorry, I encountered an error."; return updated; });
-        } finally { setIsAiTyping(false); }
+            setHistory(prev => {
+                const updated = [...prev];
+                updated[updated.length - 1].parts[0].text = `Sorry, an error occurred: ${err.message}`;
+                return updated;
+            });
+        } finally {
+            setIsAiTyping(false);
+        }
     };
+    
     if (!analysisText) return null;
+
     return (
         <div className="w-full max-w-5xl mx-auto mt-8 bg-white dark:bg-gray-800 p-6 rounded-2xl shadow-lg border border-gray-200 dark:border-gray-700">
             <div className="flex justify-between items-center mb-4">
@@ -419,13 +452,7 @@ const ChatWindow = ({ originalDocument, analysisText, mdConverter, chatLanguage,
                     onChange={(e) => setChatLanguage(e.target.value)}
                     className="p-2 bg-gray-50 dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 transition-colors text-base"
                  >
-                    <option>English</option>
-                    <option>Hindi</option>
-                    <option>Gujarati</option>
-                    <option>Kannada</option>
-                    <option>Marathi</option>
-                    <option>Tamil</option>
-                    <option>Telugu</option>
+                    <option>English</option><option>Hindi</option><option>Gujarati</option><option>Kannada</option><option>Marathi</option><option>Tamil</option><option>Telugu</option>
                 </select>
             </div>
             <div ref={chatContainerRef} className="h-96 overflow-y-auto space-y-4 pr-4">
@@ -441,11 +468,12 @@ const ChatWindow = ({ originalDocument, analysisText, mdConverter, chatLanguage,
             <div className="mt-4 flex gap-2">
                 <input type="text" value={question} onChange={(e) => setQuestion(e.target.value)} onKeyPress={(e) => e.key === 'Enter' && !isAiTyping && handleAskQuestion()} placeholder="Type or click the mic to ask..." className="flex-grow p-3 bg-gray-50 dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500" disabled={isAiTyping} />
                 <button disabled className="p-3 bg-gray-200 dark:bg-gray-700 rounded-lg hover:bg-gray-300 dark:hover:bg-gray-600 cursor-not-allowed"><MicIcon isListening={false} /></button>
-                <button onClick={() => handleAskQuestion()} disabled={isAiTyping || !question.trim()} className="bg-blue-600 text-white font-bold p-3 rounded-lg hover:bg-blue-700 disabled:bg-blue-400 dark:disabled:bg-blue-800"><SendIcon /></button>
+                <button onClick={handleAskQuestion} disabled={isAiTyping || !question.trim()} className="bg-blue-600 text-white font-bold p-3 rounded-lg hover:bg-blue-700 disabled:bg-blue-400 dark:disabled:bg-blue-800"><SendIcon /></button>
             </div>
         </div>
     );
 };
+
 const AppFooter = () => (
      <footer className="bg-gray-800 dark:bg-black text-white mt-12">
         <div className="max-w-screen-xl mx-auto py-12 px-4 sm:px-6 lg:px-8">
@@ -493,16 +521,10 @@ export default function App() {
     };
     document.body.appendChild(script);
 
-    // Add styles for the animation
     const style = document.createElement('style');
     style.innerHTML = `
-      @keyframes fadeIn {
-        from { opacity: 0; }
-        to { opacity: 1; }
-      }
-      .animate-fade-in {
-        animation: fadeIn 0.5s ease-in-out;
-      }
+      @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+      .animate-fade-in { animation: fadeIn 0.5s ease-in-out; }
     `;
     document.head.appendChild(style);
 
@@ -517,38 +539,31 @@ export default function App() {
     setIsLoading(true);
     resetState();
     try {
+      let response;
       if (uploadedImageFile) {
         const compressedDataUrl = await compressImage(uploadedImageFile);
         setUploadedImageSrc(compressedDataUrl);
         const base64Data = compressedDataUrl.split(',')[1];
-        const response = await fetch(`${BACKEND_URL}/analyze-image-stream`, {
+        response = await fetch(`${BACKEND_URL}/analyze-image-stream`, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ image_data: base64Data, language }),
         });
-        if (!response.ok) throw new Error(await response.text() || `HTTP error!`);
-        const reader = response.body.getReader();
-        const decoder = new TextDecoder();
-        while (true) {
-          const { value, done } = await reader.read();
-          if (done) break;
-          setAnalysisText(prev => prev + decoder.decode(value, { stream: true }));
-        }
       } else { 
         if (!documentText) { setError('Could not extract text to analyze.'); setIsLoading(false); return; }
-        const response = await fetch(`${BACKEND_URL}/analyze-text-stream`, {
+        response = await fetch(`${BACKEND_URL}/analyze-text-stream`, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ document: documentText, language }),
         });
-        if (!response.ok) throw new Error(await response.text() || `HTTP error!`);
-        const reader = response.body.getReader();
-        const decoder = new TextDecoder();
-        while (true) {
-          const { value, done } = await reader.read();
-          if (done) break;
-          setAnalysisText(prev => prev + decoder.decode(value, { stream: true }));
-        }
+      }
+      if (!response.ok) throw new Error(await response.text() || `HTTP error!`);
+      const reader = response.body.getReader();
+      const decoder = new TextDecoder();
+      while (true) {
+        const { value, done } = await reader.read();
+        if (done) break;
+        setAnalysisText(prev => prev + decoder.decode(value, { stream: true }));
       }
     } catch (err) {
       setError(`Analysis failed: ${err.message}`);
