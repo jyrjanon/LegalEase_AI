@@ -42,3 +42,6 @@ This project uses **Google Cloud + Generative AI** to make contracts **easy-to-u
 ```bash
 git clone https://github.com/your-username/LegalEase_AI.git
 cd LegalEase_AI
+
+---
+Special Thanks to My Team
