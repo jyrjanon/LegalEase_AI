@@ -41,6 +41,14 @@ This project uses **Google Cloud + Generative AI** to make contracts **easy-to-u
 git clone https://github.com/your-username/LegalEase_AI.git
 cd LegalEase_AI
 
+# Backend
+cd backend
+pip install -r requirements.txt
+uvicorn main:app --reload
 
+# Frontend
+cd frontend
+npm install
+npm run dev
 
 Thank you
