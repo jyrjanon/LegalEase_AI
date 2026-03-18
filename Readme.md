@@ -1,15 +1,15 @@
-
 ---
 
 ## ✨ Overview  
-Legal documents contain a lot of legal words ⚖️.
-We are building a **Google Cloud + Generative AI**-powered platform that helps make contracts simple and **easy to understand in simple English**. 
+Legal documents are often full of jargon ⚖️.  
+This project uses **Google Cloud + Generative AI** to make contracts **easy-to-understand** in **simple English**.  
 
 ✅ Upload [pdf/image/doc] or paste your legal document  
 ✅ Click **Analyze** → Get instant plain-language summary  
 ✅ Ask questions in chat 💬 (like a lawyer sitting with you!)   
 
 ---
+
 ## ⚡ Features  
 
 - 🔍 **AI-powered Legal Analysis** – Complex clauses → simple points  
@@ -30,7 +30,7 @@ We are building a **Google Cloud + Generative AI**-powered platform that helps m
 
 - **Frontend**: React + TailwindCSS  
 - **Backend**: FastAPI (Python)  
-- **AI/ML**: Google Vertex AI (Gemini), Speech-to-Text, Text-to-Speech 
+- **AI/ML**: Google Vertex AI (Gemini), Speech-to-Text, Text-to-Speech  
 
 ---
 
@@ -40,15 +40,3 @@ We are building a **Google Cloud + Generative AI**-powered platform that helps m
 ```bash
 git clone https://github.com/your-username/LegalEase_AI.git
 cd LegalEase_AI
-
-# Backend
-cd backend
-pip install -r requirements.txt
-uvicorn main:app --reload
-
-# Frontend
-cd frontend
-npm install
-npm run dev
-
-Thank you
