@@ -17,8 +17,6 @@ This project uses **Google Cloud + Generative AI** to make contracts **easy-to-u
 - 🔍 **AI-powered Legal Analysis** – Complex clauses → simple points  
 - 💬 **Chatbot with Memory** – Ask questions anytime  
 - 🎙️ **Voice-to-Text** – Speak naturally, AI listens  
-- 🗣️ **Text-to-Speech** – AI Advocate replies with voice  
-- 🧑‍⚖️ **AI Avatar** – Feels like a real lawyer on a call  
 - 🌍 **Multi-language Support** – Understand in your language  
 - 📱 **Responsive UI** – Works on desktop & mobile  
 
@@ -35,10 +33,14 @@ This project uses **Google Cloud + Generative AI** to make contracts **easy-to-u
 - **AI/ML**: Google Vertex AI (Gemini), Speech-to-Text, Text-to-Speech  
 
 ---
-
+### Contribution
+This line is added by contributor 🚀
 ## 🚀 Getting Started  
 
 ### 1️⃣ Clone Repo
 ```bash
 git clone https://github.com/your-username/LegalEase_AI.git
 cd LegalEase_AI
+
+---
+Special Thanks to My Team
