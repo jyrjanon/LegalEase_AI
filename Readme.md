@@ -33,7 +33,8 @@ This project uses **Google Cloud + Generative AI** to make contracts **easy-to-u
 - **AI/ML**: Google Vertex AI (Gemini), Speech-to-Text, Text-to-Speech  
 
 ---
-
+### Contribution
+This line is added by contributor 🚀
 ## 🚀 Getting Started  
 
 ### 1️⃣ Clone Repo
