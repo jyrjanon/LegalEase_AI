@@ -10,6 +10,8 @@ This project uses **Google Cloud + Generative AI** to make contracts **easy-to-u
 
 ---
 
+
+
 ## ⚡ Features  
 
 - 🔍 **AI-powered Legal Analysis** – Complex clauses → simple points  
