@@ -2,8 +2,8 @@
 ---
 
 ## ✨ Overview  
-Legal documents are often full of jargon ⚖️.  
-This project uses **Google Cloud + Generative AI** to make contracts **easy-to-understand** in **simple English**.  
+Legal documents contain a lot of legal words ⚖️.
+We are building a **Google Cloud + Generative AI**-powered platform that helps make contracts simple and **easy to understand in simple English**. 
 
 ✅ Upload [pdf/image/doc] or paste your legal document  
 ✅ Click **Analyze** → Get instant plain-language summary  
